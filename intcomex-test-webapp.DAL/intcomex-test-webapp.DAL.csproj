@@ -4,7 +4,11 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>intcomex_test_webapp.DAL</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\intcomex-test-webapp.DL\intcomex-test-webapp.DL.csproj" />
+  </ItemGroup>
 
 </Project>
