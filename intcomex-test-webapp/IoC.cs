@@ -12,6 +12,7 @@ namespace intcomex_test_webapp
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IContactTypeService, ContactTypeService>();
+            services.AddScoped<IDapperSqlService, DapperSqlService>();
             services.AddScoped<IRegexUtilitiesService, RegexUtilitiesService>();
 
             return services;

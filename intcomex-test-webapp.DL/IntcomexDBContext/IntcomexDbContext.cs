@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using intcomex_test_webapp.DL.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using intcomex_test_webapp.DL.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace intcomex_test_webapp.DL.IntcomexDBContext
 {
@@ -28,7 +26,6 @@ namespace intcomex_test_webapp.DL.IntcomexDBContext
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseMySql("server=35.223.30.36;port=3306;database=intcomexdb;user=admin522;password=admin522", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.26-mysql"));
             }
         }
