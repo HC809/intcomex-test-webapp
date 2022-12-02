@@ -1,0 +1,296 @@
+﻿@model intcomex_test_webapp.BLL.DTOs.UserDTO
+
+<style>
+    .my-error-class {
+        color: #FF0000;
+    }
+
+    .my-valid-class {
+        color: green;
+    }
+
+    .error {
+        margin-left: 12px;
+    }
+</style>
+
+<div class="modal-header">
+    @{
+        if (Model.UserNo == 0)
+        {
+            <h5 class="modal-title">
+                <i class="fa fa-plus"></i>
+                &nbsp; Crear Usuario
+            </h5>
+        }
+        else
+        {
+            <h5 class="modal-title">
+                <i class="fa fa-edit"></i>
+                &nbsp; Editar Usuario @Model.Username
+            </h5>
+        }
+    }
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body">
+    <div>
+        <form id="UserForm">
+            @Html.HiddenFor(m => m.UserNo)
+
+            <div class="form-group row pb-3">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.CodUser, "Código de cliente: *")
+                </div>
+                <div class="col-md-8">
+                    @Html.EditorFor(m => m.CodUser, new { htmlAttributes = new { @class = "form-control", @readonly="readonly" } })
+                </div>
+            </div>
+
+            <div class="form-group row pb-3">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Username, "Usuario: *")
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group row pb-3">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Name, "Nombre: *")
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group row pb-3">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Title, "Cargo: *")
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group row pb-3">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Phone, "Télefono: *")
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", placeholder = "+57" })
+                </div>
+            </div>
+
+            <div class="form-group row pb-3">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Email, "Email: *")
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group row pb-3">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.ContactTypeNo, "Tipo de contacto: *")
+                </div>
+                <div class="col-md-8">
+                    @Html.DropDownListFor(x => x.ContactTypeNo, new SelectList(ViewBag.ContactTypes, "Value", "Text"), "--SELECCIONE--", new { @class = " form-control select2" })
+                </div>
+            </div>
+
+
+            <div class="col-md-12">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.IsAutorizeWebstore, new { @class = "form-check-input" })
+                    @Html.LabelFor(m => m.IsAutorizeWebstore, "Autorizado para acceder a Webstore", new { @class = "form-check-label" })
+                </div>
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.IsAutorizeOrders, new { @class = "form-check-input" })
+                    @Html.LabelFor(m => m.IsAutorizeOrders, "Autorizado para crear ordenes", new { @class = "form-check-label" })
+                </div>
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.IsAutorizeOrders, new { @class = "form-check-input" })
+                    @Html.LabelFor(m => m.IsAutorizeOrders, "Desea que se envié la información de acceso al usuario?", new { @class = "form-check-label" })
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button id="cancel-button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+    <button id="save-button" type="button" class="btn btn-primary" onclick="save()">Guardar</button>
+    <button id="loading-button" class="btn btn-primary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Guardando...
+    </button>
+</div>
+
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+
+    $("#loading-button").hide();
+
+    $('#userModal').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+
+    var UserForm = $("#UserForm");
+
+    UserForm.validate({
+        ignore: [],
+        rules: {
+            CodUser: {
+                required: true,
+            },
+            Username: {
+                required: true,
+                regexUsername: /^xmx/,
+                maxlength: 6,
+                minlength: 6
+            },
+            Name: {
+                required: true,
+                maxlength: 15,
+                minlength: 5
+            },
+            Title: {
+                required: true,
+                maxlength: 10,
+                minlength: 5
+            },
+            Phone: {
+                required: true,
+                maxlength: 10,
+                minlength: 10
+            },
+            Email: {
+                required: true,
+                email: true
+            },
+            ContactTypeNo: {
+                required: true,
+            },
+        },
+        messages: {
+            CodUser: {
+                required: "*Campo Requerido.",
+            },
+            Username: {
+                required: "*Campo Requerido.",
+                maxlength: "El usuario debe ser de {0} caracteres.",
+                minlength: "El usuario debe ser de {0} caracteres.",
+            },
+            Name: {
+                required: "*Campo Requerido.",
+                maxlength: "Ingrese máximo {0} caracteres.",
+                minlength: "Ingrese mínimo {0} caracteres.",
+            },
+            Title: {
+                required: "*Campo Requerido.",
+                maxlength: "Ingrese máximo {0} caracteres.",
+                minlength: "Ingrese mínimo {0} caracteres.",
+            },
+            Phone: {
+                required: "*Campo Requerido.",
+                maxlength: "El número de teléfono debe ser de {0} caracteres.",
+                minlength: "El número de teléfono debe ser de {0} caracteres.",
+            },
+            Email: {
+                required: "*Campo Requerido.",
+                email: "Formato de correo electrónico no válido.",
+            },
+            ContactTypeNo: {
+                required: "*Seleccione una opción.",
+            },
+        },
+        errorClass: "my-error-class",
+        validClass: "my-valid-class",
+    });
+
+    $.validator.addMethod(
+        "regexUsername",
+        function (value, element, regexp) {
+            var check = false;
+            return this.optional(element) || regexp.test(value);
+        }, "Usuario no válido, debe iniciar con las letras 'xmx'."
+    );
+
+    document.getElementById('Phone').addEventListener('input', function (e) {
+        if (e.target.value.length === 1) {
+            e.target.value = '+57' + e.target.value;
+        }
+        else {
+            var extensionNumberPattern = /^\+57/;
+            var valueHasExtensionNumber = extensionNumberPattern.test(e.target.value);
+            e.target.value = valueHasExtensionNumber
+                ? e.target.value
+                : (e.target.value.length >= 3 ? e.target.value : '+57');
+        }
+    })
+
+    function save() {
+        if (UserForm.valid()) {
+            $.ajax({
+                url: '@Url.Action("Save", "Users")',
+                type: "POST",
+                dataType: "JSON",
+                data: UserForm.serialize(),
+                beforeSend: () => loading(),
+                complete: () => complete(),
+                success: function (data) {
+                    var success = data.isSuccess;
+                    var message = data.message;
+                    if (success == true) {
+                        $("#userModal").modal('hide');
+                        loadDatatable();
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            text: message,
+                            showConfirmButton: false,
+                            timer: 4000
+                        })
+                    }
+                },
+                error: function (data) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error al guardar el usuario.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            });
+        }
+    }
+
+    function loading() {
+        $("#save-button").hide();
+        $("cancel-button").prop('disabled', true);
+        $("#loading-button").show();
+    }
+
+    function complete() {
+        $("#save-button").show();
+        $("cancel-button").prop('disabled', false);
+        $("#loading-button").hide();
+    }
+</script>

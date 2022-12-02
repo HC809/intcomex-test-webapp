@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext "server=35.223.30.36;port=3306;database=intcomexdb;user=admin522;password=admin522;" Pomelo.EntityFrameworkCore.MySql -OutputDir Entities -ContextDir "IntcomexDBContext" -Context "IntcomexDbContext" -StartupProject intcomex-test-webapp.DL -Force

@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "Empleados";
+}
+
+<link href="~/lib/datatables/css/datatables.bootstrap4.css" rel="stylesheet" />
+
+<div class="">
+
+    <div class="d-flex justify-content-between pb-3">
+        <h2>Empleados Query</h2>
+    </div>
+
+    <p>Query: Consultar para cada empleado, todos sus datos, el número de empleados que han nacido el mismo día, una columna con el número de empleados que nacieron el día antes y otra con los que nacieron el día después</p>
+    <div class="col-md-3">
+        <code>select </code><br />
+        <code>emp.emp_no as empno, </code><br />
+        <code>emp.first_name as firstname, </code><br />
+        <code>emp.last_name as lastname, </code><br />
+        <code>if(emp.gender='M', 'Masculino', 'Femenino') as gender, </code><br />
+        <code>emp.hire_date as hiredate, </code><br />
+        <code>emp.birth_date as birthdate, </code><br />
+        <code>(select count(emp_no) from employees where birth_date = emp.birth_date) AS total_employees_born_same_day, </code><br />
+        <code>(select count(emp_no) from employees where birth_date = date_sub(emp.birth_date, interval 1 day)) AS total_employees_born_earlier_day, </code><br />
+        <code>(select count(emp_no) from employees where birth_date = date_add(emp.birth_date, interval 1 day)) AS total_employees_born_later_day </code><br />
+        <code>from employees emp; </code><br />
+    </div>
+
+
+    <table id="employeesTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">No.</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Genero</th>
+                <th scope="col">Fecha Nacimiento</th>
+                <th scope="col">Fecha Contratación</th>
+                <th scope="col">Empleados nacidos el mismo día</th>
+                <th scope="col">Empleados nacidos un día antes</th>
+                <th scope="col">Empleados nacidos un día despues</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+    <script src="~/lib/datatables/js/jquery.datatables.js"></script>
+    <script src="~/lib/datatables/js/datatables.bootstrap4.min.js"></script>
+    <script type="text/javascript">
+
+        var departmentsTable = $('#employeesTable');
+
+        $(document).ready(function () {
+            loadDatatable();
+        });
+
+        function loadDatatable() {
+            var otable = departmentsTable.DataTable({
+                ajax: {
+                    url: '@Url.Action("GetEmployeesTotalBorn", "Employees")',
+                    type: "get",
+                    dataType: "JSON",
+                },
+                columns: [
+                    { data: "empno", autoWidth: true },
+                    { data: "firstname", autoWidth: true },
+                    { data: "lastname", autoWidth: true },
+                    { data: "gender", autoWidth: true },
+                    {
+                        data: "birthdate", autoWidth: true, render: function (data) {
+                            return ConvertJsonDateToShortDate(data);
+                        }
+                    },
+                    {
+                        data: "hiredate", autoWidth: true, render: function (data) {
+                            return ConvertJsonDateToShortDate(data);
+                        }
+                    },
+                    { data: "same", autoWidth: true },
+                    { data: "earlier", autoWidth: true },
+                    { data: "later", autoWidth: true },
+                ],
+                'pageLength': 50,
+                'lengthMenu': [[10, 25, 50, 100, 150], [10, 25, 50, 100, 150]],
+                scroller: true,
+                destroy: true,
+                "order": [[0, "asc"]],
+                "language": {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:     ",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                }
+            });
+        }
+
+        function ConvertJsonDateToShortDate(data) {
+            // This function converts a json date to a short date
+            // e.g. /Date(1538377200000)/ to 10/1/2018
+            if (data != null) {
+                const dateValue = new Date(parseInt(data.substr(6)));
+                return dateValue.toLocaleDateString('zh-Hans-CN', { year: "numeric", month: "2-digit", day: "2-digit" });
+            }
+            return data;
+        }
+    </script>
+}
