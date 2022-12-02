@@ -17,16 +17,18 @@ namespace intcomex_test_webapp.DL.IntcomexDBContext
         {
         }
 
-        public virtual DbSet<Department> Departments { get; set; } = null!;
-        public virtual DbSet<DeptEmp> DeptEmps { get; set; } = null!;
-        public virtual DbSet<Employee> Employees { get; set; } = null!;
-        public virtual DbSet<Salary> Salaries { get; set; } = null!;
-        public virtual DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<ContactType> ContactTypes { get; set; }
+        public virtual DbSet<Department> Departments { get; set; }
+        public virtual DbSet<DeptEmp> DeptEmps { get; set; }
+        public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<Salary> Salaries { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseMySql("server=35.223.30.36;port=3306;database=intcomexdb;user=admin522;password=admin522", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.26-mysql"));
             }
         }
@@ -35,6 +37,27 @@ namespace intcomex_test_webapp.DL.IntcomexDBContext
         {
             modelBuilder.UseCollation("utf8mb4_0900_ai_ci")
                 .HasCharSet("utf8mb4");
+
+            modelBuilder.Entity<ContactType>(entity =>
+            {
+                entity.HasKey(e => e.ContactTypeNo)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("contact_type");
+
+                entity.HasIndex(e => e.ContactTypeName, "contact_type_name")
+                    .IsUnique();
+
+                entity.Property(e => e.ContactTypeNo)
+                    .HasMaxLength(2)
+                    .HasColumnName("contact_type_no")
+                    .IsFixedLength();
+
+                entity.Property(e => e.ContactTypeName)
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnName("contact_type_name");
+            });
 
             modelBuilder.Entity<Department>(entity =>
             {
@@ -52,6 +75,7 @@ namespace intcomex_test_webapp.DL.IntcomexDBContext
                     .IsFixedLength();
 
                 entity.Property(e => e.DeptName)
+                    .IsRequired()
                     .HasMaxLength(40)
                     .HasColumnName("dept_name");
             });
@@ -104,16 +128,19 @@ namespace intcomex_test_webapp.DL.IntcomexDBContext
                 entity.Property(e => e.BirthDate).HasColumnName("birth_date");
 
                 entity.Property(e => e.FirstName)
+                    .IsRequired()
                     .HasMaxLength(14)
                     .HasColumnName("first_name");
 
                 entity.Property(e => e.Gender)
+                    .IsRequired()
                     .HasColumnType("enum('M','F')")
                     .HasColumnName("gender");
 
                 entity.Property(e => e.HireDate).HasColumnName("hire_date");
 
                 entity.Property(e => e.LastName)
+                    .IsRequired()
                     .HasMaxLength(16)
                     .HasColumnName("last_name");
             });
@@ -150,33 +177,60 @@ namespace intcomex_test_webapp.DL.IntcomexDBContext
 
                 entity.ToTable("users");
 
-                entity.Property(e => e.UserNo)
-                    .ValueGeneratedNever()
-                    .HasColumnName("user_no");
+                entity.HasIndex(e => e.ContactTypeNo, "contact_type_no");
+
+                entity.HasIndex(e => e.Email, "email")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Username, "username")
+                    .IsUnique();
+
+                entity.Property(e => e.UserNo).HasColumnName("user_no");
 
                 entity.Property(e => e.CodUser)
+                    .IsRequired()
                     .HasMaxLength(11)
                     .HasColumnName("cod_user");
 
+                entity.Property(e => e.ContactTypeNo)
+                    .IsRequired()
+                    .HasMaxLength(2)
+                    .HasColumnName("contact_type_no")
+                    .IsFixedLength();
+
                 entity.Property(e => e.Email)
-                    .HasMaxLength(255)
+                    .IsRequired()
                     .HasColumnName("email");
 
+                entity.Property(e => e.IsAutorizeOrders).HasColumnName("is_autorize_orders");
+
+                entity.Property(e => e.IsAutorizeWebstore).HasColumnName("is_autorize_webstore");
+
                 entity.Property(e => e.Name)
+                    .IsRequired()
                     .HasMaxLength(15)
                     .HasColumnName("name");
 
                 entity.Property(e => e.Phone)
+                    .IsRequired()
                     .HasMaxLength(10)
                     .HasColumnName("phone");
 
                 entity.Property(e => e.Title)
+                    .IsRequired()
                     .HasMaxLength(10)
                     .HasColumnName("title");
 
                 entity.Property(e => e.Username)
+                    .IsRequired()
                     .HasMaxLength(6)
                     .HasColumnName("username");
+
+                entity.HasOne(d => d.ContactTypeNoNavigation)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.ContactTypeNo)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("users_ibfk_1");
             });
 
             OnModelCreatingPartial(modelBuilder);

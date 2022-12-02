@@ -7,4 +7,8 @@
     <RootNamespace>intcomex_test_webapp</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\intcomex-test-webapp.BLL\intcomex-test-webapp.BLL.csproj" />
+  </ItemGroup>
+
 </Project>

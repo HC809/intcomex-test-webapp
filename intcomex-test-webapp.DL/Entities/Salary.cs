@@ -10,6 +10,6 @@ namespace intcomex_test_webapp.DL.Entities
         public DateOnly ToDate { get; set; }
         public decimal Salary1 { get; set; }
 
-        public virtual Employee EmpNoNavigation { get; set; } = null!;
+        public virtual Employee EmpNoNavigation { get; set; }
     }
 }

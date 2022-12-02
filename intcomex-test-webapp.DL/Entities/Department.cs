@@ -10,8 +10,8 @@ namespace intcomex_test_webapp.DL.Entities
             DeptEmps = new HashSet<DeptEmp>();
         }
 
-        public string DeptNo { get; set; } = null!;
-        public string DeptName { get; set; } = null!;
+        public string DeptNo { get; set; }
+        public string DeptName { get; set; }
 
         public virtual ICollection<DeptEmp> DeptEmps { get; set; }
     }

@@ -39,8 +39,7 @@ namespace intcomex_test_webapp.DAL
 
         public async virtual Task<TEntity> GetSingleAsync(
               Expression<Func<TEntity, bool>> filter = null,
-              string includeProperties = ""
-)
+              string includeProperties = "")
         {
             IQueryable<TEntity> query = dbSet;
 
